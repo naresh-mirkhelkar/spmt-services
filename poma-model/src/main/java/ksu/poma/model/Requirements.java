@@ -8,9 +8,31 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Requirements {
     @JsonProperty("req_desc")
-    String description;
+    private String description;
     @JsonProperty("req_func")
-    boolean functionalFlag;
+    private boolean functionalFlag;
+
+    public int getTaskTotalDurationInDays() {
+        return taskTotalDurationInDays;
+    }
+
+    public void setTaskTotalDurationInDays(int taskTotalDurationInDays) {
+        this.taskTotalDurationInDays = taskTotalDurationInDays;
+    }
+
+    public int getTaskExpendedDuration() {
+        return taskExpendedDuration;
+    }
+
+    public void setTaskExpendedDuration(int taskExpendedDuration) {
+        this.taskExpendedDuration = taskExpendedDuration;
+    }
+
+    @JsonProperty("tot_duration_days")
+    private int taskTotalDurationInDays;
+
+    @JsonProperty("exp_duration")
+    private int taskExpendedDuration;
 
     public String getDescription() {
         return description;

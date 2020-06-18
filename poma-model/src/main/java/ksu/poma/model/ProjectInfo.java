@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.List;
 
 /*
 This is the main class object which will be returned to the consumer
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProjectInfo extends RevisionedDocument implements Serializable {
+
+    private static final long serialVersionUID = 5669505982857609969L;
 
     @JsonProperty("prj_dtls")
     private ProjectDetails projectDetails;
@@ -18,7 +21,7 @@ public class ProjectInfo extends RevisionedDocument implements Serializable {
     private TeamDetails teamDetails;
 
     @JsonProperty("rqmts")
-    private Requirements requirements;
+    private List<Requirements> requirements;
 
     public ProjectDetails getProjectDetails() {
         return projectDetails;
@@ -36,11 +39,11 @@ public class ProjectInfo extends RevisionedDocument implements Serializable {
         this.teamDetails = teamDetails;
     }
 
-    public Requirements getRequirements() {
+    public List<Requirements> getRequirements() {
         return requirements;
     }
 
-    public void setRequirements(Requirements requirements) {
+    public void setRequirements(List<Requirements> requirements) {
         this.requirements = requirements;
     }
 
