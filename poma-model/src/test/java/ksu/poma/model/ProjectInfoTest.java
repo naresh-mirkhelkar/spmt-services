@@ -21,7 +21,7 @@ class ProjectInfoTest {
 
         ProjectDetails projectDetails = new ProjectDetails();
         projectDetails.setProjectName("ProjectPlanningAndManagement");
-        projectDetails.setProjectDescription("This project is a about maintaining information about other projects");
+        projectDetails.setProjectDescription("This project is about maintaining information about other projects");
         projectInfo.setProjectDetails(projectDetails);
 
         Map<String, RoleType> teamMemRoles = new HashMap<>();
