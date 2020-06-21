@@ -16,7 +16,7 @@ public class CouchClient {
     private final String host;
     private Logger logger = LoggerFactory.getLogger(CouchClient.class);
 
-    private CouchClient(
+    public CouchClient(
             final String host,
             final int timeout,
             final String userName,
@@ -47,6 +47,10 @@ public class CouchClient {
     private String buildUrl(final String uri) {
         return String.format(
                 "%s/%s", host, (uri.startsWith("/") ? uri.substring(1) : uri));
+    }
+
+    public HttpUriRequest GET(final String uri) {
+        return new HttpGet(buildUrl(uri));
     }
 
     public HttpUriRequest POST(final String uri, final String content){
