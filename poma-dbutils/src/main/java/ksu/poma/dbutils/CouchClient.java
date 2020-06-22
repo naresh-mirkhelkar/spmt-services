@@ -1,6 +1,13 @@
 package ksu.poma.dbutils;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ksu.poma.dbutils.model.CustomHttpResponse;
+import ksu.poma.dbutils.model.DocumentHttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -9,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class CouchClient {
 
@@ -42,6 +50,48 @@ public class CouchClient {
             logger.error(Iox.getMessage());
         }
         return customHttpResponse;
+    }
+
+    public <T> DocumentHttpResponse executeRequest(final Class<T> objectInfo, final HttpUriRequest httpUriRequest) {
+//        CustomHttpResponse customHttpResponse = executeRequest(httpUriRequest);
+        ObjectMapper objectMapper = getDefaultObjectMapper();
+        DocumentHttpResponse documentHttpResponse = new DocumentHttpResponse();
+        try {
+            String dbResponse = httpClient.getHttpClient().execute(httpUriRequest, (response) -> {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                    if (response.getEntity() != null && response.getEntity().getContent() != null) {
+                        response.getEntity().getContent().transferTo(byteArrayOutputStream);
+                    }
+                }
+                return new String(byteArrayOutputStream.toByteArray());
+            });
+
+            if(Objects.nonNull(dbResponse) && !dbResponse.trim().isEmpty()){
+                documentHttpResponse = objectMapper.readerFor(objectInfo).readValue(dbResponse);
+            }
+
+        } catch (IOException Iox){
+            logger.error(Iox.getMessage());
+        }
+//        try {
+//            if (customHttpResponse.getStatusCode() == HttpStatus.SC_OK) {
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                documentHttpResponse = objectMapper.readerFor(objectInfo.getClass()).readValue(customHttpResponse.getContent());
+//            }
+//        }catch (IOException iox){
+//            logger.error(iox.getMessage());
+//        }
+        return documentHttpResponse;
+    }
+
+    public static ObjectMapper getDefaultObjectMapper(){
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        return mapper;
     }
 
     private String buildUrl(final String uri) {

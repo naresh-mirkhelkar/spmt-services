@@ -11,5 +11,12 @@
 
     <artifactId>poma-dbutils</artifactId>
 
+<dependencies>
+    <dependency>
+        <groupId>ksu.spmt</groupId>
+        <artifactId>poma-model</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
 
 </project>
