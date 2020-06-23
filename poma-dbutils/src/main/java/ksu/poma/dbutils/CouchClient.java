@@ -53,13 +53,13 @@ public class CouchClient {
     }
 
     public <T> DocumentHttpResponse executeRequest(final Class<T> objectInfo, final HttpUriRequest httpUriRequest) {
-//        CustomHttpResponse customHttpResponse = executeRequest(httpUriRequest);
         ObjectMapper objectMapper = getDefaultObjectMapper();
         DocumentHttpResponse documentHttpResponse = new DocumentHttpResponse();
         try {
             String dbResponse = httpClient.getHttpClient().execute(httpUriRequest, (response) -> {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED ||
+                        response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                     if (response.getEntity() != null && response.getEntity().getContent() != null) {
                         response.getEntity().getContent().transferTo(byteArrayOutputStream);
                     }
@@ -70,18 +70,9 @@ public class CouchClient {
             if(Objects.nonNull(dbResponse) && !dbResponse.trim().isEmpty()){
                 documentHttpResponse = objectMapper.readerFor(objectInfo).readValue(dbResponse);
             }
-
         } catch (IOException Iox){
             logger.error(Iox.getMessage());
         }
-//        try {
-//            if (customHttpResponse.getStatusCode() == HttpStatus.SC_OK) {
-//                ObjectMapper objectMapper = new ObjectMapper();
-//                documentHttpResponse = objectMapper.readerFor(objectInfo.getClass()).readValue(customHttpResponse.getContent());
-//            }
-//        }catch (IOException iox){
-//            logger.error(iox.getMessage());
-//        }
         return documentHttpResponse;
     }
 

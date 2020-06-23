@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ksu.poma.dbutils.model.CustomHttpResponse;
 import ksu.poma.dbutils.model.DocumentHttpResponse;
+import ksu.poma.dbutils.model.DocumentsAllHttpResponse;
 import ksu.poma.model.ProjectInfo;
 import ksu.poma.model.RevisionedDocument;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -46,8 +47,19 @@ public class DocumentClient {
         return  couchClient.executeRequest(couchClient.GET(formatUri(id)));
     }
 
-    public CustomHttpResponse getAll(){
-        return  couchClient.executeRequest(couchClient.GET(formatUri("_all_docs")));
+    public DocumentHttpResponse delete(String id, String rev) {
+        return couchClient.executeRequest(DocumentHttpResponse.class, couchClient.DELETE(formatUri(String.format("%s?rev=%s", id, rev))));
+    }
+
+    public DocumentsAllHttpResponse getAll(){
+        DocumentsAllHttpResponse documentsAllHttpResponse = new DocumentsAllHttpResponse();
+        try {
+            CustomHttpResponse customHttpResponse = couchClient.executeRequest(couchClient.GET(formatUri("_all_docs")));
+            documentsAllHttpResponse = jsonObjectMapper.readerFor(DocumentsAllHttpResponse.class).readValue(customHttpResponse.getContent());
+        }catch (JsonProcessingException jpe) {
+            logger.error(jpe.getMessage());
+        }
+        return documentsAllHttpResponse;
     }
 
     public <T extends RevisionedDocument> DocumentHttpResponse update(final T objectInfo){
@@ -64,7 +76,7 @@ public class DocumentClient {
 
     public <T extends RevisionedDocument> DocumentHttpResponse create(final T objectInfo){
         if (Objects.nonNull(objectInfo)) {
-            if(Objects.isNull(objectInfo.get_id()) || objectInfo.get_rev().trim().isEmpty()){
+            if(Objects.isNull(objectInfo.get_id())){
                 objectInfo.set_id(UUID.randomUUID().toString());
             }
             return createOrUpdate(objectInfo);
@@ -84,6 +96,13 @@ public class DocumentClient {
             logger.error(exception.getMessage());
         }
         return documentHttpResponse;
+    }
+
+    private enum CrudType {
+        GET,
+        UPDATE,
+        CREATE,
+        DELETE
     }
 
 }
