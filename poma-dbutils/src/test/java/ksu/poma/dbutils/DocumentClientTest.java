@@ -9,6 +9,7 @@ import ksu.poma.dbutils.model.DocumentsAllHttpResponse;
 import ksu.poma.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -76,9 +77,9 @@ class DocumentClientTest {
     void testCreate() {
 
         ProjectInfo projectInfo = new ProjectInfo();
-        int random = new Random(77).nextInt();
+        int random = new Random().nextInt();
         ProjectDetails projectDetails = new ProjectDetails();
-        projectDetails.setProjectName("Another Project" + String.valueOf(random));
+        projectDetails.setProjectName("AnotherProject" + String.valueOf(random));
         projectInfo.set_id(projectDetails.getProjectName());
         projectDetails.setProjectDescription("This is a test for another project using a random number:" + String.valueOf(random));
         projectInfo.setProjectDetails(projectDetails);
@@ -118,6 +119,7 @@ class DocumentClientTest {
     }
 
     @Test
+    @Disabled
     void testDelete(){
       DocumentHttpResponse documentHttpResponse = documentClient.delete("ae1a46c8-eb58-4452-9b83-cf786715e8e0","1-d2464599770ffba3b6797359b75e30f6");
       assertNotNull(documentHttpResponse);
