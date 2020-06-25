@@ -110,6 +110,12 @@ class DocumentClientTest {
         requirements.add(requirements2);
         projectInfo.setRequirements(requirements);
 
+        try {
+            System.out.println(new ObjectMapper().writeValueAsString(projectInfo));
+        }catch (JsonProcessingException jep){
+
+        }
+
         DocumentHttpResponse documentHttpResponse = documentClient.create(projectInfo);
         assertNotNull(documentHttpResponse);
         assertNotNull(documentHttpResponse.getId());

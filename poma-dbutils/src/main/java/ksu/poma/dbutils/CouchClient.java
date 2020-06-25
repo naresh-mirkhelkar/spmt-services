@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ksu.poma.dbutils.model.CustomHttpResponse;
 import ksu.poma.dbutils.model.DocumentHttpResponse;
+import ksu.poma.model.ProjectInfo;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
