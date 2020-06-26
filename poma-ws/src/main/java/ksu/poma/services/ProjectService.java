@@ -11,15 +11,31 @@ import ksu.poma.model.ProjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.Objects;
 
 @Path("prj-mgmt")
 public class ProjectService {
 
-    private final CouchClient couchClient = new CouchClient("http://localhost:5984",5,"admin","password");
-    private final DocumentClient documentClient =  new DocumentClient(couchClient,"prj-mgmt", new ObjectMapper());
+//    private CouchClient couchClient = new CouchClient("http://localhost:5984",5,"admin","password");
+    private CouchClient couchClient = null;
+//    private final DocumentClient documentClient =  new DocumentClient(couchClient,"prj-mgmt", new ObjectMapper());
+    private  DocumentClient documentClient = null;
     Logger logger = LoggerFactory.getLogger(ProjectService.class);
+    private String url = "http://%s:5984";
+
+    public ProjectService(){
+        String hostName = System.getenv("HOST");
+        if (Objects.nonNull(hostName) && !hostName.trim().isEmpty())
+            url = String.format(url,hostName);
+        else
+            url = String.format(url,"localhost");
+        logger.info("Using host name as " + url);
+        couchClient = new CouchClient(url,5,"admin","password");
+        documentClient =  new DocumentClient(couchClient,"prj-mgmt", new ObjectMapper());
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -78,6 +94,13 @@ public class ProjectService {
             logger.error(ex.getMessage());
         }
         return  documentHttpResponse;
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("ishealthy")
+    public String isHealthy(){
+        return "up and running!";
     }
 
 }

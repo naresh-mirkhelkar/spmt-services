@@ -1,6 +1,26 @@
 version: '3'
 
 services:
+  spmt_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.services
+    container_name: spmt_service
+    restart: always
+    environment:
+      - "HOST=spmt_database"
+    expose:
+      - 5984
+    ports:
+      - 8080:8080
+    depends_on:
+      - spmt_database
+    networks:
+      spmt-network:
+        aliases:
+          - spmt-network-service
+#        ipv4_address: 192.168.65.20
+
   spmt_database:
     build:
       context: .
@@ -11,22 +31,14 @@ services:
       - 'COUCHDB_USER=admin'
       - 'COUCHDB_PASSWORD=password'
     ports:
-    - 5984:5984
-
-#  spmt_service:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile.service
-#    container_name: spmt_service
-#    restart: always
-#    ports:
-#    - 8080:8080
-#    networks:
-#      spmt-network:
-#        - aliases:
-#            - spmt-network-db-service
+      - 5984:5984
+    networks:
+      spmt-network:
+        aliases:
+          - spmt-network-db
 
 networks:
   spmt-network:
     ipam:
       driver: default
+
